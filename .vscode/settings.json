@@ -1,0 +1,26 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    "debug.javascript.autoAttachFilter":"smart",
+    "files.exclude": {
+        "dist": false // set this to true to hide the "out" folder with the compiled JS files
+    },
+    "search.exclude": {
+        "dist": true // set this to false to include "out" folder in search results
+    },
+    
+        "eslint.validate": [
+          "javascript",
+          "javascriptreact",
+          "typescript",
+          "typescriptreact",
+        ],
+        "[javascript]": {
+            "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+          },
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": true,
+        },
+        
+
+      
+}

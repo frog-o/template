@@ -120,7 +120,15 @@ const Utils = {
 
     getPath ( name, checkExistence = false ) {
 
-      const templatePath = path.join ( Config.directory, name );
+          const templatePath = path.join(Config.directory, name);
+          if (name == "config4")
+          {
+              if (!isDirectory.sync(templatePath)) 
+              {
+                  const templatePath = path.join('builtin', name); 
+                  return checkExistence ? isDirectory.sync ( templatePath ) && templatePath : templatePath;
+              }    
+          }
 
       return checkExistence ? isDirectory.sync ( templatePath ) && templatePath : templatePath;
 
@@ -150,7 +158,7 @@ const Utils = {
 
     command () {
 
-      const commands = ['create', 'list', 'install', 'uninstall', 'update'];
+      const commands = ['create', 'list', 'install', 'uninstall', 'update','generate'];
 
       return ask.list ( 'What command to you want to execute?', commands );
 
@@ -160,8 +168,15 @@ const Utils = {
 
       const templates = Utils.templates.getNames ();
 
-      return ask.list ( 'What template to you want to use?', templates );
+      return ask.list ( 'What template do you want to use?', templates );
 
+    },
+    generate()
+    {   //loads all template and generators
+        var generators = Utils.templates.getNames();
+        //add builin generator
+        generators.push ("config4")
+        return ask.list ( 'What generator or template do you want to use?', generators );
     }
 
   },

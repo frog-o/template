@@ -54,20 +54,35 @@ const Template = {
         if ( !templates.length ) return console.error ( 'No templates installed' );
         const template = await Utils.prompt.template ();
         return Template.update ( template );
-      }
+        }
+        case 'generate': {
+            const template = await Utils.prompt.generate ()   
+        return Template.generate ( template);
+            }      
 
     }
 
-  },
+    },
+    async generate(template: string, project?: string, defaults?: string, files?: string)
+    {/* We have a config4 generator built-in.  The main reason generator where made is to handle the problem
+    of every program wanting there version of package manager( yarn ,pnpm,npm), Until this feature was add you would keep having to put 
+    "packageManager": "pnpm@7.2.1" or what ever package manager your want in package.json, delete there lockfiles and other
+    annoying things over and over ,this feature attempts to solve all that by just running
+    
+    template gen config4 defaults
+    */  
+        return Template.create(template, project, true);
+        
+    },
 
-  async create ( template: string, project?: string ) {
+  async create ( template: string, project?: string ,dontDelete :boolean =false) {
 
-    project = project || `my-${template}`;
-
+      project = project || `my-${template}`;
+      
     const templatePath = Utils.template.getPath ( template, true ),
           source = templatePath && path.join ( templatePath, 'template' ),
           destination = path.join ( process.cwd (), project );
-
+      
     if ( !source ) return console.error ( `"${template}" is not a valid template` );
 
     if ( fs.existsSync ( destination ) ) {
@@ -75,8 +90,8 @@ const Template = {
       const okay = await ask.noYes ( `There's already a file or folder named "${project}", do you want to overwrite it?` );
 
       if ( !okay ) return;
-
-      await Utils.delete ( destination );
+                
+            await Utils.delete ( destination );  
 
     }
 
@@ -87,7 +102,7 @@ const Template = {
     Utils.handlebars.useHelpers ();
     Utils.metalsmith.useMiddlewares ( ms );
 
-    ms.clean ( true )
+    ms.clean ( !dontDelete )
       .frontmatter ( false )
       .source ( source )
       .destination ( destination )

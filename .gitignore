@@ -40,3 +40,7 @@ package-lock.json
 coverage
 typings
 dist
+# I don't what these because i want people to be able to choose wich one the what to use
+# by running template gen config4 defaults
+# Package Manager lock files 
+pnpm-lock.yaml
