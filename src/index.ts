@@ -24,8 +24,8 @@ const Template = {
 
       case 'create': {
         const template = await Utils.prompt.template (),
-              project = await ask.input ( 'Project name:', false );
-        return Template.create ( template, project );
+              pathToOutput = await ask.input ( 'Path to template output:', false );
+        return Template.create ( template, pathToOutput );
       }
 
       case 'list': {
@@ -63,7 +63,7 @@ const Template = {
     }
 
     },
-    async generate(template: string, project?: string, defaults?: string, files?: string)
+    async generate(template: string, pathToOutput?: string, defaults?: string, files?: string)
     {/* We have a config4 generator built-in.  The main reason generator where made is to handle the problem
     of every program wanting there version of package manager( yarn ,pnpm,npm), Until this feature was add you would keep having to put 
     "packageManager": "pnpm@7.2.1" or what ever package manager your want in package.json, delete there lockfiles and other
@@ -71,23 +71,23 @@ const Template = {
     
     template gen config4 defaults
     */  
-        return Template.create(template, project, true);
+        return Template.create(template, pathToOutput, true);
         
     },
 
-  async create ( template: string, project?: string ,dontDelete :boolean =false) {
+  async create ( template: string, pathToOutput?: string ,dontDelete :boolean =false) {
 
-      project = project || `my-${template}`;
+      pathToOutput = pathToOutput || `my-${template}`;
       
     const templatePath = Utils.template.getPath ( template, true ),
           source = templatePath && path.join ( templatePath, 'template' ),
-          destination = path.join ( process.cwd (), project );
+          destination = path.join ( process.cwd (), pathToOutput );
       
     if ( !source ) return console.error ( `"${template}" is not a valid template` );
 
     if ( fs.existsSync ( destination ) ) {
 
-      const okay = await ask.noYes ( `There's already a file or folder named "${project}", do you want to overwrite it?` );
+      const okay = await ask.noYes ( `There's already a file or folder named "${pathToOutput}", do you want to overwrite it?` );
 
       if ( !okay ) return;
                 
@@ -165,7 +165,7 @@ const Template = {
         }
 
         console.log ( `Template "${repository}" installed as "${template}"` );
-        console.log ( `Run "template create ${template} ${color.blue ( '<project>' )}" to get started` );
+        console.log ( `Run "template create ${template} ${color.blue ( '<pathToOutput>' )}" to get started` );
 
       } catch ( e ) {
 

@@ -16,11 +16,11 @@ async function CLI () {
         /* WIZARD */
     .action ( () => Template.wizard () )
         /* CREATE */
-    .command ( 'create', 'Create a project from a template' )
+    .command ( 'create', 'Create files from a template' )
     .argument ( '<template>', 'Template name' )
-    .argument ( '[project]', 'Project name' )
+    .argument ( '[path2TempDir]', 'Path To Template Dir' )
     .option ( "-dd, --dontDelete", "Do Not delete files ,useful when upgrading templates")
-    .action ( ({ args, options }) => Template.create(args.template, args.project, options.dontDelete))
+    .action ( ({ args, options }) => Template.create(args.template, args.path2TempDir, options.dontDelete))
     /* LIST */
     .command ( 'list', 'List installed templates' )
     .action ( () => Template.list () )
@@ -38,13 +38,13 @@ async function CLI () {
     .argument ( '[template]', 'Template name' )
     .action ( args => Template.update ( args.template ) )
     /* GENERATE */
-    .command('generate', 'Generate a project or file from a template')
+    .command('generate', 'Generate files from a template')
     .alias("gen", "scaffold")
     .argument('<template>', 'Generator or Template name')
-    .argument('[project]', 'Project name')
-    .argument('[defaults]', 'Project default values')
+    .argument('[path2TempDir]', 'Path to dir in wich template file are generated')
+    .argument('[defaults]', 'Template default values')
     .argument('[files]', ' default values')
-    .action(args => Template.generate(args.template, args.project, args.defaults, args.files))
+    .action(args => Template.generate(args.template, args.path2TempDir, args.defaults, args.files))
     
   caporal.run(process.argv.slice(2))
 
