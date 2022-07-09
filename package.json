@@ -16,6 +16,7 @@
     "test": "ava",
     "test:watch": "ava --watch",
     "uncompile": "node -r ts-node/register --inspect ./src/bin/index.ts",
+    "tnt": "node -r ts-node/register --inspect ./src/bin/index.ts",
     "coverage": "nyc --reporter=html ava",
     "report": "nyc report",
     "report:html": "open coverage/index.html",
@@ -48,6 +49,7 @@
     "simple"
   ],
   "dependencies": {
+    "@caporal/core": "^2.0.2",
     "absolute": "0.0.1",
     "consolidate": "^0.14.5",
     "del": "^3.0.0",

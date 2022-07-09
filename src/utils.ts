@@ -15,7 +15,7 @@ import * as multimatch from 'multimatch';
 import * as path from 'path';
 import Config from './config';
 import * as Helpers from './helpers';
-import * as Middlewares from './middlewares';
+
 
 /* UTILS */
 
@@ -259,9 +259,9 @@ const Utils = {
 
     useMiddlewares ( metalsmith ) {
 
-      metalsmith.use ( Middlewares.schema )
-                .use ( Middlewares.prompt )
-                .use ( Middlewares.render );
+     // metalsmith.use ( Middlewares.schema )
+     //           .use ( Middlewares.prompt )
+     //           .use ( Middlewares.render );
 
     }
 

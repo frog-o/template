@@ -11,7 +11,7 @@ import * as pify from 'pify';
 import {color} from 'specialist';
 import Config from './config';
 import Utils from './utils';
-
+import { generator } from "./middleware"
 /* TEMPLATE */
 
 const Template = {
@@ -98,9 +98,10 @@ const Template = {
     if ( Config.autoUpdate ) await Template.update ( template );
 
     const ms = metalsmith ( __dirname );
-
-    Utils.handlebars.useHelpers ();
-    Utils.metalsmith.useMiddlewares ( ms );
+    ms.use(generator)
+    
+    Utils.handlebars.useHelpers();
+    //Utils.metalsmith.useMiddlewares ( ms );
 
     ms.clean ( !dontDelete )
       .frontmatter ( false )

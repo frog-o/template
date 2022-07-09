@@ -9,7 +9,8 @@ import * as path from 'path';
 const Config = {
   autoUpdate: true,
   directory: path.join ( os.homedir (), '.template' ),
-  templateConfigName: 'template.json'
+  templateConfigName: 'template.json',
+  hooksName:'hook'
 };
 
 /* EXPORT */

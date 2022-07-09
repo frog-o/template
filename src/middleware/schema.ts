@@ -8,55 +8,54 @@ import Config from '../config';
 import Utils from '../utils';
 
 /* SCHEMA */
+export function loadSchema(templatePath: string)
+{
+return  new schema(templatePath)   
+}
+interface varValues{}
+ export class schema {
+     templateSchema: any;
+     computerSchema: any;
+     projectSchema: any;
 
-async function schema ( files, metalsmith, next ) {
-
+     fileSchema :any;
+     filter: any
+     Variables = new Map<string,varValues>()
+     templateName: string;
+    
   /* VARIABLES */
 
-  const source = metalsmith.source (),
-        templatePath = path.dirname ( source ),
-        template = path.basename ( templatePath );
+  
+    constructor(templatePath: string) {
+        
+        const computerConfig = Utils.loadJSON(path.join(Config.directory, Config.templateConfigName))
 
-  /* TEMPLATE SCHEMA */
+        this.templateSchema = Utils.loadJSON(path.join(templatePath, Config.templateConfigName))
+        this.computerSchema = _.get(computerConfig, `templates.${this.templateName}`);
+        this.projectSchema = Utils.loadJSON('./.templates/templates.json')
+        this.templateName = path.basename(templatePath);
+    }
 
-  const templateSchema = await Utils.loadJSON ( path.join ( templatePath, Config.templateConfigName ) ),
-        {filter} = templateSchema;
+        
+     isFileVailid(filepath,contents) {
+         
+         if (Utils.template.isFileSkipped(filepath, this.filter)) return false
+         if (isBinary.sync(contents, contents.length)) return false;
+         return true
+     }
 
-  /* FILES SCHEMA */
+    getSchema(filepath,contents)
+     {            _.extend(this.Variables[filepath], this.fileSchema);
+        
+         const fileSchema = Utils.handlebars.getSchema(contents.toString());
+        
 
-  const filesVariables = {},
-        filesSchema = { variables: filesVariables };
+        
+        
+            const schemaData = _.merge(fileSchema, this.templateSchema, this.computerSchema, this.projectSchema);
 
-  _.forOwn ( files, ( file, filepath ) => {
+        return schemaData;
 
-    if ( Utils.template.isFileSkipped ( filepath, filter ) ) return;
+    }
 
-    const {contents} = file;
-
-    if ( isBinary.sync ( contents, contents.length ) ) return;
-
-    const fileSchema = Utils.handlebars.getSchema ( contents.toString () );
-
-    _.extend ( filesVariables, fileSchema );
-
-  });
-
-  /* COMPUTER SCHEMA */
-
-  const computerConfig = await Utils.loadJSON ( path.join ( Config.directory, Config.templateConfigName ) ),
-        computerSchema = _.get ( computerConfig, `templates.${template}` );
-
-  /* SCHEMA */
-
-  const metadata = metalsmith.metadata (),
-        schema = _.merge ( filesSchema, templateSchema, computerSchema );
-
-  metadata.schema = schema;
-
-  next ();
-
-};
-
-/* EXPORT */
-
-export default schema;
+}

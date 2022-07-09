@@ -28,15 +28,25 @@ async function CLI () {
     .command ( 'install', 'Install a template from a repository' )
     .argument ( '<repository>', 'Git endpoint url, GitHub shorthand or local path' )
     .argument ( '[template]', 'Template name' )
-    .action ( args => Template.install ( args.repository, args.template ) )
+        .action(({logger, args }) =>
+        {
+            logger.info("intalling template from , %r!", args.repository)
+            Template.install(args.repository, args.template)
+        })
     /* UNINSTALL */
     .command ( 'uninstall', 'Uninstall one or all templates' )
     .argument ( '[template]', 'Template name' )
-    .action ( args => Template.uninstall ( args.template ) )
+        .action(({ logger, args }) => {
+            logger.info("unintalling template from , %r!", args.repository)
+            Template.uninstall(args.template)
+        })
     /* UPDATE */
     .command ( 'update', 'Update one or all templates' )
     .argument ( '[template]', 'Template name' )
-    .action ( args => Template.update ( args.template ) )
+        .action(({ logger, args }) => {
+            logger.info("updateing template from , %r!", args.repository)
+            Template.update(args.template)
+        })
     /* GENERATE */
     .command('generate', 'Generate files from a template')
     .alias("gen", "scaffold")
@@ -44,7 +54,7 @@ async function CLI () {
     .argument('[path2TempDir]', 'Path to dir in wich template file are generated')
     .argument('[defaults]', 'Template default values')
     .argument('[files]', ' default values')
-    .action(args => Template.generate(args.template, args.path2TempDir, args.defaults, args.files))
+    .action(({ args }) => Template.generate(args.template, args.path2TempDir, args.defaults, args.files))
     
   caporal.run(process.argv.slice(2))
 
