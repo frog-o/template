@@ -10,7 +10,7 @@ import * as finder from 'fs-finder';
 import * as fs from 'fs';
 import * as isDirectory from 'is-directory';
 import * as isUrl from 'is-url';
-import * as loadJSON from 'load-json-file';
+
 import * as multimatch from 'multimatch';
 import * as path from 'path';
 import Config from './config';
@@ -21,19 +21,6 @@ import * as Helpers from './helpers';
 
 const Utils = {
 
-  async loadJSON ( path, fallback = {} ) {
-
-    try {
-
-      return await loadJSON ( path );
-
-    } catch ( e ) {
-
-      return fallback;
-
-    }
-
-  },
 
   delete ( path ) {
 
@@ -123,11 +110,11 @@ const Utils = {
           const templatePath = path.join(Config.directory, name);
           if (name == "config4")
           {
-              if (!isDirectory.sync(templatePath)) 
+              if (!isDirectory.sync(templatePath))
               {
-                  const templatePath = path.join('builtin', name); 
+                  const templatePath = path.join('builtin', name);
                   return checkExistence ? isDirectory.sync ( templatePath ) && templatePath : templatePath;
-              }    
+              }
           }
 
       return checkExistence ? isDirectory.sync ( templatePath ) && templatePath : templatePath;

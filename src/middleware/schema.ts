@@ -1,61 +1,92 @@
 
 /* IMPORT */
 
+
 import * as _ from 'lodash';
 import * as isBinary from 'isbinaryfile';
 import * as path from 'path';
 import Config from '../config';
+import { autoLoadSync } from '@tib/configload';
+import * as JSOXpkg from 'jsox'
+const { JSOX } = JSOXpkg
 import Utils from '../utils';
 
-/* SCHEMA */
-export function loadSchema(templatePath: string)
-{
-return  new schema(templatePath)   
+//import * as json5 from "json5"
+
+export class basicFilter {
+
 }
-interface varValues{}
- export class schema {
-     templateSchema: any;
-     computerSchema: any;
-     projectSchema: any;
+/* BASIC SCHEMA */
+export class Schema {
 
-     fileSchema :any;
-     filter: any
-     Variables = new Map<string,varValues>()
-     templateName: string;
-    
+  filter: basicFilter
+  Variables = new Map<string, basicVariable>()
+  json: JSON;
+
+  static load(path, subJSON?: string) {
+
+    if (subJSON !== undefined) { return new Schema(path, subJSON) }
+    return new Schema(path)
+  }
+  constructor(path2conf: string, subConf?: string) {
+    if (subConf === undefined) {
+      autoLoadSync(path2conf).then((loadedJSON) => { this.json = loadedJSON })
+    }
+    else {
+      autoLoadSync(path2conf).then((loadedJSON) => {
+        var text = "{}"
+        if (loadedJSON.hasOwnProperty(subConf)) {
+          text = loadedJSON[subConf].stringify
+        }
+
+        this.json = JSOX.parse(text)
+      })
+    }
+
+  }
+}
+
+export class basicVariable { }
+
+
+export class schemaManager extends Schema {
+
+  _schema = new Map<string, Schema>()
+
   /* VARIABLES */
+  static get(path2template): schemaManager {
+    return new schemaManager(path2template)
+  }
 
-  
-    constructor(templatePath: string) {
-        
-        const computerConfig = Utils.loadJSON(path.join(Config.directory, Config.templateConfigName))
+  constructor(path2template: string) {
+    super(path2template)
 
-        this.templateSchema = Utils.loadJSON(path.join(templatePath, Config.templateConfigName))
-        this.computerSchema = _.get(computerConfig, `templates.${this.templateName}`);
-        this.projectSchema = Utils.loadJSON('./.templates/templates.json')
-        this.templateName = path.basename(templatePath);
+    const sPath =
+    {
+      "computer": path.join(Config.directory, Config.templateConfigName),
+      "template": path.join(path2template, Config.templateConfigName)
     }
 
-        
-     isFileVailid(filepath,contents) {
-         
-         if (Utils.template.isFileSkipped(filepath, this.filter)) return false
-         if (isBinary.sync(contents, contents.length)) return false;
-         return true
-     }
 
-    getSchema(filepath,contents)
-     {            _.extend(this.Variables[filepath], this.fileSchema);
-        
-         const fileSchema = Utils.handlebars.getSchema(contents.toString());
-        
+    this._schema["computer"] = schemaManager.load(sPath.computer, "templates." + path.basename(path2template))
+    this._schema["template"] = schemaManager.load(sPath.template)
+    this._schema["merged"] = _.merge(this._schema["merged"], this._schema["template"], this._schema["computer"])
+    //this._schema["file"] = json5.parse()
+  }
 
-        
-        
-            const schemaData = _.merge(fileSchema, this.templateSchema, this.computerSchema, this.projectSchema);
 
-        return schemaData;
+  isFileVailid(filepath, contents) {
 
-    }
+    if (Utils.template.isFileSkipped(filepath, this.filter)) return false
+    if (isBinary.sync(contents, contents.length)) return false;
+    return true
+  }
+
+  getSchema(filepath, contents) {
+
+    this._schema["file"] = Utils.handlebars.getSchema(contents.toString());
+    _.extend(this.Variables[filepath], this._schema["file"]);
+    return this._schema["file"]
+  }
 
 }

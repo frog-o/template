@@ -7,9 +7,10 @@ import * as path from 'path';
 /* CONFIG */
 
 const Config = {
-  autoUpdate: true,
+  autoUpdate: false,
   directory: path.join ( os.homedir (), '.template' ),
-  templateConfigName: 'template.json',
+    templateConfigName: 'template.json',
+  //path to hook script for template loading 
   hooksName:'hook'
 };
 

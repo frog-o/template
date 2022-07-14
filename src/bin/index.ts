@@ -1,9 +1,9 @@
-#!/usr/bin/env node
+#!/usr/bin/env ts-node
 
 /* IMPORT */
 
-import CLI from '../cli';
+import {CLI } from '../cli';
 
 /* CLI */
 
-CLI ();
+CLI();

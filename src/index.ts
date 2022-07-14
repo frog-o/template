@@ -5,13 +5,15 @@ import ask from 'inquirer-helpers';
 import {exec} from 'child_process';
 import * as fs from 'fs';
 import * as isUrl from 'is-url';
-import * as metalsmith from 'metalsmith';
 import * as path from 'path';
 import * as pify from 'pify';
 import {color} from 'specialist';
 import Config from './config';
-import Utils from './utils';
+import  Utils  from './utils';
 import { generator } from "./middleware"
+import  { default as Metalsmith } from 'metalsmith';
+//const Metalsmith  = require('metalsmith');
+
 /* TEMPLATE */
 
 const Template = {
@@ -81,11 +83,11 @@ const Template = {
       
     const templatePath = Utils.template.getPath ( template, true ),
           source = templatePath && path.join ( templatePath, 'template' ),
-          destination = path.join ( process.cwd (), pathToOutput );
+          destination = path.join ( process.env['INIT_CWD'] as string , pathToOutput );
       
     if ( !source ) return console.error ( `"${template}" is not a valid template` );
 
-    if ( fs.existsSync ( destination ) ) {
+    if ( fs.existsSync ( destination ) && dontDelete === false) {
 
       const okay = await ask.noYes ( `There's already a file or folder named "${pathToOutput}", do you want to overwrite it?` );
 
@@ -97,7 +99,7 @@ const Template = {
 
     if ( Config.autoUpdate ) await Template.update ( template );
 
-    const ms = metalsmith ( __dirname );
+    const ms = Metalsmith ( __dirname );
     ms.use(generator)
     
     Utils.handlebars.useHelpers();
