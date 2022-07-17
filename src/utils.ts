@@ -1,24 +1,28 @@
+/* eslint-disable no-useless-escape */
+
 
 /* IMPORT */
 
-import * as _ from 'lodash';
-import * as absolute from 'absolute';
+import _ from 'lodash';
+import absolute from 'absolute';
 import ask from 'inquirer-helpers';
-import * as del from 'del';
-import * as handlebars from 'handlebars';
-import * as finder from 'fs-finder';
-import * as fs from 'fs';
-import * as isDirectory from 'is-directory';
-import * as isUrl from 'is-url';
+import del from 'del';
+import handlebars from 'handlebars'
+import finder from 'fs-finder';
+import fs from 'fs';
+import isUrl from 'is-url';
 
-import * as multimatch from 'multimatch';
-import * as path from 'path';
+import multimatch from 'multimatch';
+import path from 'path';
 import Config from './config';
 import * as Helpers from './helpers';
-
+import Middleware from './middleware'
 
 /* UTILS */
-
+function isDirectory(directory):boolean
+{
+  return fs.statSync(directory).isDirectory()
+}
 const Utils = {
 
 
@@ -51,6 +55,7 @@ const Utils = {
 
         /* GITHUB REPOSITORY */
 
+        // eslint-disable-next-line no-useless-escape
         const repo = repository.match ( /.+github\.com\/([^\s\/.]+)\/([^\s\/#]+)(?:$|\/|#)/ );
 
         if ( repo ) return `https://github.com/${repo[1]}/${repo[2]}.git`;
@@ -67,13 +72,13 @@ const Utils = {
 
         if ( absolute ( repository ) ) {
 
-          if ( isDirectory.sync ( repository ) ) return repository;
+          if ( isDirectory ( repository ) ) return repository;
 
         } else {
 
           const fullPath = path.join ( process.cwd (), repository );
 
-          if ( isDirectory.sync ( fullPath ) ) return fullPath;
+          if ( isDirectory ( fullPath ) ) return fullPath;
 
         }
 
@@ -104,20 +109,34 @@ const Utils = {
   },
 
   template: {
+    /*The old version of template < 1.1.5 had a template dir which make templates of everything in that dir
+    in version of template >1.15 template has been renamed to TNTConf.d and everything is ignore in it.
+    This allow you to put you template with your project and setup per file config.
+    */ 
+    hasTNTConfDir(templatePath:string):boolean{ 
+    
+      return isDirectory(path.join(templatePath,"template"))
+  
+      },
+    hasTemplateDir(templatePath:string):boolean{ 
+    
+    return isDirectory(path.join(templatePath,"TNTConf.d"))
 
-    getPath ( name, checkExistence = false ) {
+    },
+
+    getPath ( name) {
 
           const templatePath = path.join(Config.directory, name);
-          if (name == "config4")
+          if (name == "files4")
           {
-              if (!isDirectory.sync(templatePath))
+              if (!isDirectory(templatePath))
               {
                   const templatePath = path.join('builtin', name);
-                  return checkExistence ? isDirectory.sync ( templatePath ) && templatePath : templatePath;
+                  return templatePath;
               }
           }
 
-      return checkExistence ? isDirectory.sync ( templatePath ) && templatePath : templatePath;
+      return templatePath;
 
     },
 
@@ -160,9 +179,9 @@ const Utils = {
     },
     generate()
     {   //loads all template and generators
-        var generators = Utils.templates.getNames();
-        //add builin generator
-        generators.push ("config4")
+        const generators = Utils.templates.getNames();
+        //add builtin generator
+        generators.push ("files4")
         return ask.list ( 'What generator or template do you want to use?', generators );
     }
 
@@ -246,7 +265,7 @@ const Utils = {
 
     useMiddlewares ( metalsmith ) {
 
-     // metalsmith.use ( Middlewares.schema )
+      metalsmith.use ( Middleware )
      //           .use ( Middlewares.prompt )
      //           .use ( Middlewares.render );
 

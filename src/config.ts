@@ -9,9 +9,10 @@ import * as path from 'path';
 const Config = {
   autoUpdate: false,
   directory: path.join ( os.homedir (), '.template' ),
-    templateConfigName: 'template.json',
+  templateConfigName: 'template',
   //path to hook script for template loading 
-  hooksName:'hook'
+  templateHookName: 'template.hook',
+  
 };
 
 /* EXPORT */

@@ -6,12 +6,25 @@
     
     "configurations": [
         {
-            "name": "Launch Program",
+            "name": "TNT create template files4",
             "type": "node",
             "request": "launch",
+            "cwd": "${workspaceFolder}/src/buildIn/",
+            "runtimeExecutable":"tsx",
+            "smartStep": true,
+            "args": [
+                "watch","create","template","files4"
+            ]       , 
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Launch TNT",
+            "type": "node",
+            "request": "launch",
+            "smartStep": true,
             "runtimeArgs": [
                 "--loader",
-                "ts-node/esm"
+                "tsx"
             ],
             "args": [
                 "${workspaceFolder}/src/bin/index.ts"

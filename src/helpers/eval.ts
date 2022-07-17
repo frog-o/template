@@ -6,7 +6,7 @@ function helper ( exp, options ) {
   const regex = /\${(\S+)}/g,
         compiled = exp.replace ( regex, ( match, pull ) => options.hash[pull] );
 
-  return eval ( compiled );
+  return(0, eval) ( compiled );
 
 }
 

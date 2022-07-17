@@ -3,23 +3,27 @@
 
 import ask from 'inquirer-helpers';
 import {exec} from 'child_process';
-import * as fs from 'fs';
-import * as isUrl from 'is-url';
-import * as path from 'path';
-import * as pify from 'pify';
+import fs from 'fs';
+import isUrl from 'is-url';
+import path from 'path';
+import pify from 'pify';
 import {color} from 'specialist';
-import Config from './config';
+//import Config from './config';
 import  Utils  from './utils';
-import { generator } from "./middleware"
-import  { default as Metalsmith } from 'metalsmith';
+//import generator  from "./middleware"
+//import  { default as Metalsmith } from 'metalsmith';
+import { Mixin } from 'ts-mixer';
+import { templateCreate } from './command/create';
+import { templateUpdate } from './command/update';
+
 //const Metalsmith  = require('metalsmith');
 
 /* TEMPLATE */
 
-const Template = {
+export class Template extends Mixin(templateCreate,templateUpdate) {
 
   async wizard () {
-
+    
     const command = await Utils.prompt.command ();
 
     switch ( command ) {
@@ -27,57 +31,56 @@ const Template = {
       case 'create': {
         const template = await Utils.prompt.template (),
               pathToOutput = await ask.input ( 'Path to template output:', false );
-        return Template.create ( template, pathToOutput );
+        return this.create ( template, pathToOutput );
       }
 
       case 'list': {
-        return Template.list ();
+        return this.list ();
       }
 
       case 'install': {
         const repository = await ask.input ( 'Repository to install:' ),
               template = await ask.input ( 'Template name:', false );
-        return Template.install ( repository, template );
+        return this.install ( repository, template );
       }
 
       case 'uninstall': {
         const all = await ask.noYes ( 'Do you want to uninstall all templates?' );
-        if ( all ) return Template.uninstall ( false );
+        if ( all ) return this.uninstall ( false );
         const templates = Utils.templates.getNames ();
         if ( !templates.length ) return console.error ( 'No templates installed' );
         const template = await Utils.prompt.template ();
-        return Template.uninstall ( template );
+        return this.uninstall ( template );
       }
 
       case 'update': {
         const all = await ask.noYes ( 'Do you want to update all templates?' );
-        if ( all ) return Template.update ();
+        if ( all ) return this.update ();
         const templates = Utils.templates.getNames ();
         if ( !templates.length ) return console.error ( 'No templates installed' );
         const template = await Utils.prompt.template ();
-        return Template.update ( template );
+        return this.update ( template );
         }
         case 'generate': {
             const template = await Utils.prompt.generate ()   
-        return Template.generate ( template);
+        return this.generate ( template);
             }      
 
     }
-
-    },
-    async generate(template: string, pathToOutput?: string, defaults?: string, files?: string)
+  }
+    async generate(template: string, pathToOutput?: string)
     {/* We have a config4 generator built-in.  The main reason generator where made is to handle the problem
     of every program wanting there version of package manager( yarn ,pnpm,npm), Until this feature was add you would keep having to put 
-    "packageManager": "pnpm@7.2.1" or what ever package manager your want in package.json, delete there lockfiles and other
+    "packageManager": "pnpm@7.2.1" or what ever package manager your want in package.json, delete there lock files and other
     annoying things over and over ,this feature attempts to solve all that by just running
     
     template gen config4 defaults
     */  
-        return Template.create(template, pathToOutput, true);
+        return this.create(template, pathToOutput, true);
         
-    },
-
-  async create ( template: string, pathToOutput?: string ,dontDelete :boolean =false) {
+    }
+/*
+  async create ( template: string, pathToOutput?: string ,dontDelete  = false) {
 
       pathToOutput = pathToOutput || `my-${template}`;
       
@@ -97,7 +100,7 @@ const Template = {
 
     }
 
-    if ( Config.autoUpdate ) await Template.update ( template );
+    if ( Config.autoUpdate ) await this.update ( template );
 
     const ms = Metalsmith ( __dirname );
     ms.use(generator)
@@ -115,8 +118,8 @@ const Template = {
 
     console.log ( `Created "${destination}"` );
 
-  },
-
+  }
+*/
   async list () {
 
     const names = await Utils.templates.getNames ();
@@ -131,7 +134,7 @@ const Template = {
 
     }
 
-  },
+  }
 
   async install ( repository: string, template?: string ) {
 
@@ -183,7 +186,7 @@ const Template = {
 
     }
 
-  },
+  }
 
   async uninstall ( template?: string | boolean ) {
 
@@ -201,11 +204,11 @@ const Template = {
 
       if ( !names.length ) return console.error ( 'No templates installed' );
 
-      names.forEach ( name => Template.uninstall ( name ) );
+      names.forEach ( name => this.uninstall ( name ) );
 
     } else { // Single
 
-      const folderPath = Utils.template.getPath ( template, true );
+      const folderPath = Utils.template.getPath ( template);
 
       if ( !folderPath ) return console.error ( `"${template}" is not installed` );
 
@@ -215,7 +218,7 @@ const Template = {
 
     }
 
-  },
+  }
 
   async update ( template?: string ) {
 
@@ -225,11 +228,11 @@ const Template = {
 
       if ( !names.length ) return console.error ( 'No templates installed' );
 
-      names.forEach ( name => Template.update ( name ) );
+      names.forEach ( name => this.update ( name ) );
 
     } else { // Single
 
-      const folderPath = Utils.template.getPath ( template, true );
+      const folderPath = Utils.template.getPath ( template);
 
       if ( !folderPath ) return console.error ( `"${template}" is not installed` );
 
@@ -268,8 +271,8 @@ const Template = {
 
   }
 
-};
+}
 
 /* EXPORT */
 
-export default Template;
+export const TemplateManager = new Template();

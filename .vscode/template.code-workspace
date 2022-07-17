@@ -1,0 +1,28 @@
+{
+	"folders": [
+		{
+			"path": "/home/stein/src/template"
+		},
+		{
+			"path": "/home/stein/.template/template",
+			"name": "create-template"
+		}
+	],
+	"settings": {
+		"debug.javascript.autoAttachFilter": "onlyWithFlag",
+		"cSpell.words": [
+			"configload",
+			"esbuild",
+			"esno",
+			"Fabio",
+			"fabiospampinato",
+			"isbinaryfile",
+			"JSOX",
+			"pnpm",
+			"scripthost",
+			"Spampinato",
+			"tsup",
+			"uncompile"
+		]
+	}
+}

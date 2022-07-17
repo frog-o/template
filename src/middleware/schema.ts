@@ -7,8 +7,8 @@ import * as isBinary from 'isbinaryfile';
 import * as path from 'path';
 import Config from '../config';
 import { autoLoadSync } from '@tib/configload';
-import * as JSOXpkg from 'jsox'
-const { JSOX } = JSOXpkg
+import * as JSOXpackage from 'jsox'
+const { JSOX } = JSOXpackage
 import Utils from '../utils';
 
 //import * as json5 from "json5"
@@ -34,8 +34,8 @@ export class Schema {
     }
     else {
       autoLoadSync(path2conf).then((loadedJSON) => {
-        var text = "{}"
-        if (loadedJSON.hasOwnProperty(subConf)) {
+        let text = "{}"
+        if (loadedJSON.hasOwnProperty.call(subConf)) {
           text = loadedJSON[subConf].stringify
         }
 
@@ -75,7 +75,7 @@ export class schemaManager extends Schema {
   }
 
 
-  isFileVailid(filepath, contents) {
+  isFileValid(filepath, contents) {
 
     if (Utils.template.isFileSkipped(filepath, this.filter)) return false
     if (isBinary.sync(contents, contents.length)) return false;

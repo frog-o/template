@@ -1,6 +1,6 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-    "debug.javascript.autoAttachFilter":"smart",
+    "debug.javascript.autoAttachFilter":"always",
     "files.exclude": {
         "dist": false // set this to true to hide the "out" folder with the compiled JS files
     },
@@ -20,6 +20,26 @@
         "editor.codeActionsOnSave": {
           "source.fixAll.eslint": true,
         },
+        "cSpell.ignoreWords": [
+          "Metalsmith",
+          "pify"
+        ],
+        "cSpell.words": [
+          "configload",
+          "esbuild",
+          "esno",
+          "Fabio",
+          "fabiospampinato",
+          "frontmatter",
+          "isbinaryfile",
+          "jsox",
+          "Middlewares",
+          "multimatch",
+          "pnpm",
+          "Spampinato",
+          "tsup",
+          "uncompile"
+        ],
         
 
       
