@@ -13,7 +13,7 @@
             "runtimeExecutable":"tsx",
             "smartStep": true,
             "args": [
-                "watch","create","template","files4"
+                "--inspect","../bin/index.ts","create","template","files4",
             ]       , 
             "console": "integratedTerminal"
         },

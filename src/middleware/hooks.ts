@@ -2,9 +2,7 @@ import * as path from 'path';
 import Config from '../config';
 import * as fs from 'fs'
 import { schemaManager} from './schema';
-
-
-export interface hooks{
+export interface hookCallbacks{
     BeforeParserStart(schema :schemaManager,filepath:fs.PathLike):void
 
 }
@@ -14,25 +12,37 @@ export function getHookManager(path)
     }
 export class hookManager 
 {
+    _hookCallbackClass:hookCallbacks 
+
     hasHook(property: string) {
-        return (typeof(this._hooks[property]==='function'))
+        if(this._hookCallbackClass !== undefined)
+        
+        if (this._hookCallbackClass[property]!== undefined)
+           {return true}
+        return false
         
     }
     call(property: string, ...args) {
-        if (this.hasHook(property))
+        if (this._hookCallbackClass !== undefined)
         {
-         const myFun = this._hooks[property]   
+        if (typeof(this._hookCallbackClass[property])==="function")
+        {
+         const myFun = this._hookCallbackClass[property] 
+             
+         
          if(myFun.length === args.length)
            {
             myFun(args)
            }
         }
+    }
         
     }
     
     _templatePath;
     _templateHasHook = false;
-    _hooks:hooks;
+    _hooks:hookCallbacks;
+    _hookFullPath:string;
     constructor(templatePath:string) {
 
         this._templatePath = templatePath 
@@ -43,20 +53,40 @@ export class hookManager
         }
     
     }
-    
-    async loadHooks()
+    getHookType(filepath)
     {
-        this._hooks = await import(path.join(this._templatePath, Config.templateHookName)) 
+        if (fs.existsSync(filepath+".ts")){return  ".ts"}
+        if (fs.existsSync(filepath+".mts")){return ".mts"}
+        if (fs.existsSync(filepath+".cts")){return ".cts"}
+        if (fs.existsSync(filepath+".js")){return  ".js"}
+        if (fs.existsSync(filepath+".cjs")){return ".cjs"}
+        if (fs.existsSync(filepath+".mjs")){return ".mjs"}
+        return "None"
+           
+    }
+
+    async loadHooks()
+    {   if(this._hookFullPath !=="None")
+        {
+        if (this._hooks === undefined)
+        {
+        this._hooks = await import(this._hookFullPath) 
+        if (this._hooks["myHook"]!== undefined)
+        {
+        this._hookCallbackClass = new this._hooks["myHook"]()
+        }
+        }
+    }
         return this._hooks
     }
 
     templateHasHook():boolean
     {
         
-        const check4js = path.join(this._templatePath,"TNTConf.d" ,Config.templateHookName + ".js")
-        const check4ts = path.join(this._templatePath,"TNTConf.d", Config.templateHookName + ".ts")
-        
-        if (fs.existsSync(check4js)||fs.existsSync(check4ts)) return true
+        let check4hook = path.join(this._templatePath,"template",Config.templateHookName)
+        check4hook= path.join(check4hook+this.getHookType(check4hook))
+        this._hookFullPath =check4hook
+        if (check4hook !== "none") {return true }
         return false
     }
     /*

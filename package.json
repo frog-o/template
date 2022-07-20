@@ -26,10 +26,10 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/"
+      "import": "./dist/index.mjs"
     },
     "./sdk": {
-      "import": "./dist/middleware/"
+      "import": "./dist/index.mjs"
     },
     "./package.json": "./package.json"
   },

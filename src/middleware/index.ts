@@ -6,10 +6,10 @@
 import { schemaManager  as schemaManager } from './schema';
 import {getHookManager} from "./hooks"
 export * from "./hooks"
-import { Files ,} from 'metalsmith';
-import * as path from 'path';
-import * as Metalsmith from 'metalsmith';
-import * as _ from 'lodash'
+import { Files } from 'metalsmith';
+import path from 'path';
+import Metalsmith from 'metalsmith';
+import  _ from 'lodash'
 
 export default async function generator(files:Files ,ms:Metalsmith, next):Promise<void>{
     
@@ -20,7 +20,9 @@ export default async function generator(files:Files ,ms:Metalsmith, next):Promis
     //template = path.basename(schema);
     //const metadata= metalsmith.metadata () as JSON
     const schema = schemaManager.get(msPaths.template)
-    
+    const HookManager = getHookManager(msPaths.template)  
+
+    HookManager.loadHooks().then( () =>{
     _.forOwn ( files, (file, filepath) => {
 
         
@@ -28,25 +30,21 @@ export default async function generator(files:Files ,ms:Metalsmith, next):Promis
         if (schema.isFileValid(filepath, file.contents)) {
 
             //metadata.schema = schema.getSchema(filepath, file.contents);
-            const HookManager = getHookManager(msPaths.template)
+            
 
-            HookManager.loadHooks().then( () =>{
+            
                 if(HookManager.hasHook('BeforeParserStart'))
                 {
-                    HookManager.call('BeforeParserStart',(file.filepath,schema))
+                    HookManager.call('BeforeParserStart',file.filepath,schema)
                 }
-            })
+            }
 
-        }
+        })
 
-
+        next()
     });
-    next()
-    //forEach(files => {
-    //    schema.load(templatePath,file.filepath)
-        
-   // });
-
+    
+    
     
 
 

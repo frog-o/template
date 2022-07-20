@@ -30,8 +30,8 @@ export async function CLI () {
     .command ( 'create', 'Create files from a template' )
     .argument ( '<template>', 'Template name' )
     .argument ( '[path2TempDir]', 'Path To Template Dir' )
-    .option ( "-dd, --dontDelete", "Do Not delete files ,useful when upgrading templates")
-    .action ( ({ args, options }) => TemplateManager.create(args.template as string, args.path2TempDir as string, options.dontDelete as boolean))
+    .option ( "-dd, --doNotDelete", "Do Not delete files ,useful when upgrading templates")
+    .action ( ({ args, options }) => TemplateManager.create(args.template as string, args.path2TempDir as string, options.doNotDelete as boolean))
     /* LIST */
     .command ( 'list', 'List installed templates' )
     .action ( () => TemplateManager.list () )
@@ -41,28 +41,28 @@ export async function CLI () {
     .argument ( '[template]', 'Template name' )
         .action(({logger, args }) =>
         {
-            logger.info("intalling template from , %r!", args.repository)
+            logger.info("installing template from , %r!", args.repository)
             TemplateManager.install(args.repository as string, args.template as string)
         })
     /* UNINSTALL */
     .command ( 'uninstall', 'Uninstall one or all templates' )
     .argument ( '[template]', 'Template name' )
         .action(({ logger, args }) => {
-            logger.info("unintalling template from , %r!", args.repository)
+            logger.info("uninstalling template from , %r!", args.repository)
             TemplateManager.uninstall(args.template as string)
         })
     /* UPDATE */
     .command ( 'update', 'Update one or all templates' )
     .argument ( '[template]', 'Template name' )
         .action(({ logger, args }) => {
-            logger.info("updateing template from , %r!", args.repository)
+            logger.info("updating template from , %r!", args.repository)
             TemplateManager.update(args.template as string)
         })
     /* GENERATE */
     .command('generate', 'Generate files from a template')
     .alias("gen", "scaffold")
     .argument('<template>', 'Generator or Template name')
-    .argument('[path2TempDir]', 'Path to dir in wich template file are generated')
+    .argument('[path2TempDir]', 'Path to dir in which template file are generated')
     .argument('[defaults]', 'Template default values')
     .argument('[files]', ' default values')
     .action(({ args }) => TemplateManager.generate(args.template as string, args.path2TempDir as string))

@@ -21,6 +21,7 @@ import Middleware from './middleware'
 /* UTILS */
 function isDirectory(directory):boolean
 {
+  if (!fs.existsSync(directory)){return false}
   return fs.statSync(directory).isDirectory()
 }
 const Utils = {
@@ -115,12 +116,12 @@ const Utils = {
     */ 
     hasTNTConfDir(templatePath:string):boolean{ 
     
-      return isDirectory(path.join(templatePath,"template"))
+      return isDirectory(path.join(templatePath,"TNTConf.d"))
   
       },
     hasTemplateDir(templatePath:string):boolean{ 
     
-    return isDirectory(path.join(templatePath,"TNTConf.d"))
+    return isDirectory(path.join(templatePath,"template"))
 
     },
 

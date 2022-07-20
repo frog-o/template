@@ -2,14 +2,16 @@
 /* IMPORT */
 
 
-import * as _ from 'lodash';
-import * as isBinary from 'isbinaryfile';
-import * as path from 'path';
+import _ from 'lodash';
+import isBinary from 'isbinaryfile';
+import path from 'path';
 import Config from '../config';
 import { autoLoadSync } from '@tib/configload';
 import * as JSOXpackage from 'jsox'
 const { JSOX } = JSOXpackage
 import Utils from '../utils';
+import fs from 'fs';
+
 
 //import * as json5 from "json5"
 
@@ -19,17 +21,25 @@ export class basicFilter {
 /* BASIC SCHEMA */
 export class Schema {
 
+
   filter: basicFilter
   Variables = new Map<string, basicVariable>()
   json: JSON;
 
-  static load(path, subJSON?: string) {
+
+  static load(path: string, subJSON?: string) {
 
     if (subJSON !== undefined) { return new Schema(path, subJSON) }
     return new Schema(path)
   }
+
+
   constructor(path2conf: string, subConf?: string) {
+    path2conf = path.join(path2conf,Config.templateConfigName)
+    path2conf = path.join(this.FindExtension(path2conf))
+    if(fs.existsSync(path2conf)){
     if (subConf === undefined) {
+      
       autoLoadSync(path2conf).then((loadedJSON) => { this.json = loadedJSON })
     }
     else {
@@ -42,8 +52,17 @@ export class Schema {
         this.json = JSOX.parse(text)
       })
     }
-
   }
+  }
+  FindExtension(file:string):string
+  {
+  if (fs.existsSync(file+".json6")){return "json6"}
+  if (fs.existsSync(file+".json5")){return "json5"}
+  if (fs.existsSync(file+".yaml")){return "yaml"}
+  if (fs.existsSync(file+".toml")){return "toml"}
+  return "None"
+  }
+
 }
 
 export class basicVariable { }
