@@ -1,16 +1,12 @@
 
 /* IMPORT */
 
-import {describe} from 'ava-spec';
-import Utils from '../dist/src/utils';
+import describe from 'ava';
+import Utils from '../src/utils';
 
 /* TEMPLATE */
 
-describe ( 'Template', it => {
-
-  describe ( 'guessName', it => {
-
-    it ( 'Guesses a name from a git endpoint', t => {
+    describe ( 'Guesses a name from a git endpoint', t => {
 
       const endpoints = [
         'http://foo.com/repo.git',
@@ -27,6 +23,3 @@ describe ( 'Template', it => {
 
     });
 
-  });
-
-});

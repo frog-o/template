@@ -1,22 +1,26 @@
 
 /* IMPORT */
 
-import {describe} from 'ava-spec';
-import * as handlebars from 'handlebars';
-import Utils from '../dist/src/utils';
+import describe   from 'ava';
+import Utils from '../src/utils';
 
 /* HANDLEBARS */
 
-describe ( 'Handlebars', it => {
+
+describe ( 'Handlebars', t => 
+{
 
   Utils.handlebars.useHelpers ();
+  t.pass()
 
-  describe ( 'getSchema', it => {
-
-    it ( 'Extracts the schema from a template', t => {
-
+})
+/* 
+describe ( 'getSchema', () => {
+*/
+    describe ( 'Extracts the schema from a template', t => {
       const INPUT = { type: 'input' },
             CONFIRM = { type: 'confirm' };
+
 
       const templates = [
         ['foo', {}],
@@ -39,12 +43,9 @@ describe ( 'Handlebars', it => {
         ['{{_ "sum" foo bar}}', { foo: INPUT, bar: INPUT }]
       ];
 
-      templates.forEach ( ([ template, schema ]) => {
-        t.deepEqual ( Utils.handlebars.getSchema ( template ), schema, template );
-      });
+      templates.forEach ( ([ template, schema ]) => { 
+       t.deepEqual ( Utils.handlebars.getSchema ( template ), schema);
 
     });
 
-  });
-
-});
+    });
