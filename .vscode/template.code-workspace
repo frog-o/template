@@ -6,16 +6,19 @@
 		{
 			"path": "/home/stein/.template/template",
 			"name": "create-template"
+		},
+		{
+			"path": "../../typescript-Debug"
 		}
 	],
 	"settings": {
-		"debug.javascript.autoAttachFilter": "onlyWithFlag",
+		"debug.javascript.autoAttachFilter": "smart",
 		"cSpell.words": [
 			"configload",
 			"esbuild",
-			"esno",
 			"Fabio",
 			"fabiospampinato",
+			"getcwd",
 			"isbinaryfile",
 			"JSOX",
 			"pnpm",
@@ -23,6 +26,41 @@
 			"Spampinato",
 			"tsup",
 			"uncompile"
+		],
+		"docwriter.style": "JSDoc",
+		"testify.testRunnerPath": "./node_modules/ava/entrypoints/cli.mjs",
+		"jasmineExplorer.nodeArgv": [
+			"--loader",
+			"tsx"
+		],
+		"mochaExplorer.nodeArgv": [
+			"--loader",
+			"tsx",
+			"--inspect"
+		],
+		"jest.jestCommandLine": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
+		"avaExplorer.nodeArgv": [
+			"-loader",
+			"tsx"
+		],
+		"ava-launch.integrationTestFileExtension": "ts",
+		"ava-launch.integrationTestFileScript": "test-ava",
+		"jest.autoRun": {
+		
+		},
+		"typescript.tsdk": "template/node_modules/typescript/lib"
+	},
+	"extensions": {
+		//the fabiospampinato.vscode-todo-plus extension recommendations to install silversearcher-ag 
+		//you can this in debain with 
+		//sudo apt-get install silversearcher-ag
+		//see here for others https://github.com/ggreer/the_silver_searcher
+
+		"recommendations": [
+			"aaron-bond.better-comments","fabiospampinato.vscode-todo-plus",
+			"mintlify.document","esbenp.prettier-vscode",
+			//"clarencep.vscode-ava-test-adapter3",
+			//"yisroelyakovson.ava-launch"
 		]
 	}
 }

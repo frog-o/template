@@ -6,17 +6,32 @@
     
     "configurations": [
         {
-            "name": "TNT create template files4",
+            "name": "Test TNT create template files4",
             "type": "node",
             "request": "launch",
             "cwd": "${workspaceFolder}/src/buildIn/",
             "runtimeExecutable":"tsx",
             "smartStep": true,
             "args": [
-                "--inspect","../bin/index.ts","create","template","files4",
+                "--inspect","../bin/index.ts","create","-d","template","files4",
+            ]       , 
+            "console": "integratedTerminal",
+            "autoAttachChildProcesses": true
+        },
+        {
+            "name": "test create chrome-extension",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/../test-TNT-create",
+            "runtimeExecutable":"tsx",
+            "smartStep": true,
+            "args": [
+                "--inspect","../template/src/bin/index.ts","create","chrome-extension","./","-d" ,"-m",
             ]       , 
             "console": "integratedTerminal"
         },
+        
+        //template create chrome-extension 
         {
             "name": "Launch TNT",
             "type": "node",
@@ -30,6 +45,31 @@
                 "${workspaceFolder}/src/bin/index.ts"
             ]       , 
             "console": "integratedTerminal"
-        }
+        },
+            {   "stopOnEntry": true,
+                "type": "node",
+                "request": "launch",
+                "name": "Debug AVA test file",
+                "args": [ "inspect,--loader=tsx,--experimental-specifier-resolution=node"],
+                "runtimeExecutable": "${workspaceFolder}/node_modules/ava/entrypoints/cli.mjs",
+                "program": "${workspaceFolder}/test/src/utils.ts",
+                "console": "integratedTerminal", // optional
+    
+            },
+            {
+                "name": "vscode-jest-tests",
+                "type": "node",
+                "request": "launch",
+                "runtimeExecutable":"${workspaceFolder}/node_modules/tsx/dist/cli.js",
+                "runtimeArgs": [
+                  "--inspect-brk",
+                  "${workspaceRoot}/node_modules/jest/bin/jest.js",
+                  "--runInBand"
+                ],
+                "console": "integratedTerminal",
+                "internalConsoleOptions": "neverOpen"
+              }
+        
     ]
+
 }

@@ -1,73 +1,71 @@
 
-/* IMPORT */
+// IMPORT //
 
+import { Command } from 'commander';
 
-import pkg from '@caporal/core';
-const { program } = pkg;
 
 import {updater} from 'specialist';
-import { TemplateManager } from '.';
+import  TemplateManager  from './command';
 import {autoLoadSync} from '@tib/configload';
-
-/* CLI */
+// CLI //
 
 export async function CLI () {
-
-//   const myJson = await import('../package.json', {
-//    assert: { type: 'json' }
-//  });
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   const myJson = await autoLoadSync(new URL('../package.json', import.meta.url).pathname) as any
-   const name = myJson.name;
-   const version = myJson.version;
-   updater ({ name , version });
+   const program = new Command();
+   
+   const myJson:{name:string,version:string, description:string} = await autoLoadSync(new URL('../package.json', import.meta.url).pathname)
+   updater ({ name: myJson.name , version :myJson.version});
 
 
    program
-        /* WIZARD */
+        // WIZARD //
     .action ( () => TemplateManager.wizard () )
-        /* CREATE */
-    .command ( 'create', 'Create files from a template' )
+    .name(myJson.name)
+    .version(myJson.version)
+    .description(myJson.description)
+        // CREATE //
+    program.command ( 'create').description( 'Create files from a template' )
     .argument ( '<template>', 'Template name' )
-    .argument ( '[path2TempDir]', 'Path To Template Dir' )
-    .option ( "-dd, --doNotDelete", "Do Not delete files ,useful when upgrading templates")
-    .action ( ({ args, options }) => TemplateManager.create(args.template as string, args.path2TempDir as string, options.doNotDelete as boolean))
-    /* LIST */
-    .command ( 'list', 'List installed templates' )
+    .argument ( '[pathToOutput]', 'The Path To Output the files from the template' )
+    .option ( "-m, --merge", "Merge Do Not delete files ,useful when upgrading templates")
+    .option ( "-d, --dryRun", "Does a dry run  print to console output of files")
+    .action ( ( template,pathToOutput, options ) => TemplateManager.create(template,pathToOutput, options))
+    // LIST //
+    program.command ( 'list').description( 'List installed templates' )
     .action ( () => TemplateManager.list () )
-    /* INSTALL */
-    .command ( 'install', 'Install a template from a repository' )
+    // INSTALL //
+    program.command ( 'install').description( 'Install a template from a repository' )
     .argument ( '<repository>', 'Git endpoint url, GitHub shorthand or local path' )
     .argument ( '[template]', 'Template name' )
-        .action(({logger, args }) =>
+        .action((repository, template ) =>
         {
-            logger.info("installing template from , %r!", args.repository)
-            TemplateManager.install(args.repository as string, args.template as string)
+        console.info("installing template from , %r!",repository)
+            TemplateManager.install(repository, template)
         })
-    /* UNINSTALL */
-    .command ( 'uninstall', 'Uninstall one or all templates' )
+    // UNINSTALL //
+    program.command ( 'uninstall').description( 'Uninstall one or all templates' )
     .argument ( '[template]', 'Template name' )
-        .action(({ logger, args }) => {
-            logger.info("uninstalling template from , %r!", args.repository)
-            TemplateManager.uninstall(args.template as string)
+        .action(({repository, template }) => {
+            console.info("uninstalling template from , %r!", repository)
+            TemplateManager.uninstall(template)
         })
-    /* UPDATE */
-    .command ( 'update', 'Update one or all templates' )
+    // UPDATE //
+    program.command ( 'update').description( 'Update one or all templates' )
     .argument ( '[template]', 'Template name' )
-        .action(({ logger, args }) => {
-            logger.info("updating template from , %r!", args.repository)
-            TemplateManager.update(args.template as string)
+        .action((repository, template ) => {
+         console.info("updating template from , %r!", repository)
+            TemplateManager.update(template)
         })
-    /* GENERATE */
-    .command('generate', 'Generate files from a template')
-    .alias("gen", "scaffold")
+    // GENERATE //
+    program.command('generate').description( 'Generate files from a template')
+    .alias("gen")
+    .alias("scaffold")
     .argument('<template>', 'Generator or Template name')
-    .argument('[path2TempDir]', 'Path to dir in which template file are generated')
+    .argument('[pathToOutput]', 'Path to dir in which template file are generated')
     .argument('[defaults]', 'Template default values')
     .argument('[files]', ' default values')
-    .action(({ args }) => TemplateManager.generate(args.template as string, args.path2TempDir as string))
+    .action((template ,pathToOutput ) => TemplateManager.generate(template , pathToOutput))
 
-    program.run(process.argv.slice(2))
+    program.parse()
 
 }
 

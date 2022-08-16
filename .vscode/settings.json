@@ -1,6 +1,9 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-    "debug.javascript.autoAttachFilter":"always",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.bracketPairColorization.enabled": true,
+    "editor.guides.bracketPairs":"active",
+
     "files.exclude": {
         "dist": false // set this to true to hide the "out" folder with the compiled JS files
     },
@@ -14,9 +17,9 @@
           "typescript",
           "typescriptreact",
         ],
-        "[javascript]": {
-            "editor.defaultFormatter": "dbaeumer.vscode-eslint"
-          },
+    //    "[javascript]": {
+     //       "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+      //    },
         "editor.codeActionsOnSave": {
           "source.fixAll.eslint": true,
         },
@@ -26,21 +29,30 @@
         ],
         "cSpell.words": [
           "configload",
+          "ecto",
+          "enten",
           "esbuild",
           "esno",
           "Fabio",
           "fabiospampinato",
           "frontmatter",
+          "getcwd",
+          "iarna",
           "isbinaryfile",
           "jsox",
           "Middlewares",
           "multimatch",
           "pnpm",
           "Spampinato",
+          "tsdoc",
           "tsup",
           "uncompile"
         ],
-        
+        "jest.autoRun":  {
+          "watch": false,
+          "onSave": "test-file"
+       }
+
 
       
 }

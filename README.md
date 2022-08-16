@@ -5,7 +5,7 @@
 
 A super-simple way to create new projects based on templates.
 
-Inspired by [Khaos](https://github.com/segmentio/khaos), but with a better CLI, schemas and a more up-to-date code.
+Inspired by [Khaos](https://github.com/segmentio/khaos), with a better CLI, schemas and a more up-to-date code and [projen](https://github.com/projen/projen)
 
 ## Install
 

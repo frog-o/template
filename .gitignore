@@ -44,3 +44,8 @@ dist
 # by running template gen files4 defaults
 # Package Manager lock files 
 pnpm-lock.yaml
+
+#documention is automaticaly generated from source 
+
+docs
+#test 

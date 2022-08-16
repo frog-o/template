@@ -13,20 +13,23 @@
     "clean:dist": "rimraf dist",
     "clean:coverage": "rimraf coverage .nyc_output",
     "clean": "npm run clean:dist && npm run clean:coverage",
-    "compile": "tsup ./src/bin/index.ts --format esm --dts --sourcemap --clean ",
+    "compile": "tsup ./src/bin/index.ts ./src/index.ts --format esm --dts --sourcemap --clean  ",
     "compile:watch": "npm run compile --watch",
-    "test": "check-export-map && ava",
-    "test:watch": "ava --watch",
+    "test-ava": "ava",
+    "test:watch-ava": "ava --watch",
+    "test-jest": "node --inspect --experimental-vm-modules node_modules/jest/bin/jest.js --no-cache --runInBand",
     "uncompile": "node  --loader tsx --inspect ./src/bin/index.ts",
     "tnt": "node  --loader tsx --inspect ./src/bin/index.ts",
     "coverage": "nyc --reporter=html ava",
     "report": "nyc report",
     "report:html": "open coverage/index.html",
-    "prepublishOnly": "npm run clean && npm run compile && npm run coverage"
+    "prepublishOnly": "npm run clean && npm run compile && npm run coverage",
+    "doc": "ts-docs src/index.ts",
+    "server": "markserv -p 8642 -a 0.0.0.0 ./docs/index.html"
   },
   "exports": {
     ".": {
-      "import": "./dist/index.mjs"
+      "import": "./dist/bin/index.mjs"
     },
     "./sdk": {
       "import": "./dist/index.mjs"
@@ -34,10 +37,17 @@
     "./package.json": "./package.json"
   },
   "ava": {
+    "extensions": {
+      "ts": "module"
+    },
+    "nodeArguments": [
+      "--experimental-specifier-resolution=node",
+      "--loader=tsx",
+      "--inspect"
+    ],
+    "timeout": "20m",
     "files": [
-      "test/handlebars.js",
-      "test/repository.js",
-      "test/template.js"
+      "test/src/*.ts"
     ]
   },
   "bugs": {
@@ -60,46 +70,61 @@
     "simple"
   ],
   "dependencies": {
-    "@caporal/core": "^2.0.2",
-    "@swc/core": "^1.2.215",
+    "@i-doit/enten-types": "^1.0.5",
+    "@iarna/toml": "^2.2.5",
     "@tib/configload": "^0.3.0",
-    "absolute": "0.0.1",
+    "ava": "^4.3.1",
+    "commander": "^9.4.0",
     "consolidate": "^0.14.5",
     "del": "^3.0.0",
-    "esno": "^0.16.3",
+    "ecto": "^2.0.2",
     "fs-finder": "^1.8.1",
     "handlebars": "^4.7.7",
     "inquirer-helpers": "^1.3.5",
-    "is-directory": "^0.3.1",
+    "install": "^0.13.0",
     "is-url": "^1.2.4",
     "isbinaryfile": "^3.0.3",
     "jsox": "^1.2.113",
+    "left-phalange-api": "^3.0.0",
     "lodash": "^4.17.21",
     "metalsmith": "^2.5.0",
     "multimatch": "^2.1.0",
     "p-series": "^1.1.0",
     "pify": "^3.0.0",
     "specialist": "^0.3.0",
-    "ts-mixer": "^6.0.1",
-    "ts-node": "^10.9.1",
-    "typescript": "^4.7.4"
+    "ts-mixer": "^6.0.1"
   },
   "devDependencies": {
     "@eslint/create-config": "^0.3.0",
+    "@jest/globals": "^28.1.3",
+    "@swc/core": "^1.2.220",
+    "@swc/jest": "^0.2.22",
+    "@ts-docs/default-docs-structure": "^0.4.4",
+    "@ts-docs/ts-docs": "^0.4.4",
+    "@types/jest": "^28.1.6",
     "@types/lodash": "^4.14.182",
     "@types/metalsmith": "^2.3.1",
     "@types/node": "^10.17.60",
-    "@typescript-eslint/eslint-plugin": "^5.30.6",
-    "@typescript-eslint/parser": "^5.30.6",
-    "ava": "^0.22.0",
-    "ava-spec": "^1.1.1",
+    "@typescript-eslint/eslint-plugin": "^5.31.0",
+    "@typescript-eslint/parser": "^5.31.0",
     "check-export-map": "^1.3.0",
-    "esbuild": "^0.14.49",
-    "eslint": "^8.19.0",
+    "es-jest": "^2.0.0",
+    "esbuild": "^0.14.51",
+    "eslint": "^8.20.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-tsdoc": "^0.2.16",
+    "jest": "^28.1.3",
+    "markserv": "^1.17.4",
     "nyc": "^11.9.0",
+    "prettier": "^2.7.1",
     "rimraf": "^2.7.1",
-    "tsup": "^6.1.3",
+    "ts-jest": "^28.0.7",
+    "ts-node": "^10.9.1",
+    "tsup": "^6.2.1",
     "tsx": "^3.8.0",
-    "typescript-transform-export-interop": "^1.0.4"
+    "typedoc": "^0.23.9",
+    "typedoc-plugin-extras": "^2.3.0",
+    "typedoc-plugin-markdown": "^3.13.4",
+    "typescript": "^4.7.4"
   }
 }

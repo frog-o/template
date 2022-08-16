@@ -3,8 +3,8 @@ import path from 'path';
 import pify from 'pify';
 import {exec} from 'child_process';
 
-export class templateUpdate{
-async Update ( template?: string ) {
+
+export async function update ( template?: string ) {
 
     if ( !template ) { // All
 
@@ -54,4 +54,3 @@ async Update ( template?: string ) {
     }
 
   }
-}

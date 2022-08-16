@@ -1,10 +1,12 @@
-/* eslint-disable no-useless-escape */
-
+/**run test in esm is hard to do especially with typescript this link was really helpful in my quest
+https://github.com/avajs/ava/blob/main/docs/recipes/typescript.md
+https://github.com/avajs/ava/issues/2593
+https://github.com/esbuild-kit/tsx
+*/
 
 /* IMPORT */
 
 import _ from 'lodash';
-import absolute from 'absolute';
 import ask from 'inquirer-helpers';
 import del from 'del';
 import handlebars from 'handlebars'
@@ -15,23 +17,98 @@ import isUrl from 'is-url';
 import multimatch from 'multimatch';
 import path from 'path';
 import Config from './config';
-import * as Helpers from './helpers';
-import Middleware from './middleware'
+import * as Helpers from './helpers/index';
+import { fileURLToPath ,URL } from 'url';
+
+
+
 
 /* UTILS */
+/**
+ * If the directory exists, return whether it's a directory.
+ * @param directory - The directory to check.
+ * @returns A boolean value.
+ */
 function isDirectory(directory):boolean
 {
   if (!fs.existsSync(directory)){return false}
   return fs.statSync(directory).isDirectory()
 }
 const Utils = {
+  isDirectory,
 
 
-  delete ( path ) {
+  /**
+   * It deletes a directory
+   * @param path - The path to the directory you want to delete.
+   * @returns A promise that will resolve when the directory has been deleted.
+   */
+  deleteDir ( path ) {
 
     return del ( path, { force: true } );
 
   },
+  /* Checking if the file has a extension type. */
+  /**
+   * It adds an extension type to a file and check if it exists
+   * @param pathToFile - The path to the file you want to check.
+   * @param  extensionTypeList - The list of extensions to check for.
+   * @returns The path with the found extension type. If file can't be found 
+   * with extension from @param extensionTypeList it returns "None"
+   */
+    addExtensionType(pathToFile:string | URL, extensionTypeList:string[]):string
+  {
+    try
+    {
+    //this will only work on absolute url   
+    pathToFile = fileURLToPath(pathToFile)
+    }
+    catch
+    {
+     //since we know it not a valid url check if it an absolute path if not make it one
+    if(!path.isAbsolute(pathToFile.toString()))
+    {pathToFile = path.join(Utils.getSWD("addExtensionType"),String(pathToFile))}
+    }
+    
+  for (const extensionType of extensionTypeList)  
+  {
+    if(fs.existsSync(pathToFile+"."+extensionType))
+    {return pathToFile+"."+ extensionType}
+    
+  }  
+  return "None"
+
+  },
+
+  /**
+   * It returns the directory of the script that called the @param calledFunctionName
+   * this work similar to getCwd() except it return the directory of the executing script if @param calledFunctionName is not
+   * @param  calledFunctionName - The name of the function that we want to know the script directory of.
+   * 
+   * @returns The directory of the script that called @param theCalledFunction.
+   */
+  getSWD(calledFunctionName:string =""):string{
+    const stack = new Error()?.stack?.split('\n')
+    if (stack !== undefined)
+    {
+      if( calledFunctionName ===""){calledFunctionName="getSWD"}
+      for (let index = 0; index+1 < stack.length; index++) {
+     
+      if (stack[index].indexOf(calledFunctionName)>0)
+      {
+      
+      return stack[index+1].slice(
+      stack[index+1].lastIndexOf('(')+1, 
+      stack[index+1].lastIndexOf('/')+1)      
+      }
+    }
+    
+    
+    
+   return "None"
+  }
+  return "None"
+},
 
   exists ( path ) {
 
@@ -71,7 +148,7 @@ const Utils = {
 
         /* PATH */
 
-        if ( absolute ( repository ) ) {
+        if ( path.isAbsolute( repository ) ) {
 
           if ( isDirectory ( repository ) ) return repository;
 
@@ -262,17 +339,8 @@ const Utils = {
 
   },
 
-  metalsmith: {
-
-    useMiddlewares ( metalsmith ) {
-
-      metalsmith.use ( Middleware )
-     //           .use ( Middlewares.prompt )
-     //           .use ( Middlewares.render );
-
-    }
-
-  }
+ 
+ 
 
 };
 

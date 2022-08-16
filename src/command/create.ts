@@ -1,18 +1,21 @@
 import Config from '../config';
 import  Utils  from '../utils';
-import  generator  from "../middleware"
+import  { generator} from "../middleware/generator"
 import * as path from 'path';
 import  { default as Metalsmith } from 'metalsmith';
 import * as fs from 'fs';
 import ask from 'inquirer-helpers';
-import { TemplateManager as Template } from '..';
+import  TemplateManager  from '../command';
+import { metalSmithData } from '../middleware/types/metalsmith';
+import { createOption } from './types';
 
 
 
-export class  templateCreate {
-async create ( templateName: string, pathToOutput?: string ,doNotDelete  =false) {
-
-    pathToOutput = pathToOutput || `my-${templateName}`;
+export async function create ( templateName: string, pathToOutput: string =`my-${templateName}`,options ?:createOption) {
+  
+  const merge= options?.merge ?? false 
+  
+  
     
   let source = Utils.template.getPath (templateName)
   /*This is very tricky to get right in esm script 
@@ -26,29 +29,32 @@ async create ( templateName: string, pathToOutput?: string ,doNotDelete  =false)
   
     
   if ( !source ) {return console.error ( `"${templateName}" is not a valid template` );}
-  //check for backward compatibility in new version not used except when you 
-  //you want to put thing in your TNTConf.d directory.
-  if (Utils.template.hasTemplateDir(source)){source = path.join(source,'template')}
-
-  if ( fs.existsSync ( dest ) && doNotDelete === false) {
+  
+  
+  if ( fs.existsSync ( dest ) && merge === false) {
 
     const okay = await ask.noYes ( `There's already a file or folder named "${pathToOutput}", do you want to overwrite it?` );
 
     if ( !okay ) return;
-              
-          //await Utils.delete ( dest );  
-
+   
   }
 
-  if ( Config.autoUpdate ) await Template.update ( templateName );
+  if ( Config.autoUpdate ) await TemplateManager.update ( templateName );
 
   const ms = Metalsmith (new URL('.', import.meta.url).pathname );
+
+
+  const msData: metalSmithData={}
+  if(options !== undefined)
+  {msData.options=options}
+  
+  ms.metadata(msData)
   ms.use(generator)
   
   Utils.handlebars.useHelpers();
 
 
-  ms.clean ( !doNotDelete )
+  ms.clean ( !merge && ((msData?.options?.dryRun === undefined)? false:msData.options.dryRun ))
     .frontmatter ( false )
     .source ( source )
     .destination ( dest )
@@ -59,4 +65,4 @@ async create ( templateName: string, pathToOutput?: string ,doNotDelete  =false)
   console.log ( `Created "${dest}"` );
 
 }
-}
+

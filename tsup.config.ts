@@ -5,9 +5,9 @@ export default defineConfig({
   splitting: false,
   sourcemap: true,
   clean: true,
-  outExtension({ format }) {
+  outExtension() {
     return {
-      js: `.${format}.mjs`,
+      js: `.mjs`,
     }
 }
 })

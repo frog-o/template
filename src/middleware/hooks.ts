@@ -2,32 +2,40 @@ import * as path from 'path';
 import Config from '../config';
 import * as fs from 'fs'
 import { schemaManager} from './schema';
-export interface hookCallbacks{
+import Utils  from '../utils';
+
+/* Creating a hookManager class and exporting it. */
+export interface IHookCallbacks{
     BeforeParserStart(schema :schemaManager,filepath:fs.PathLike):void
 
 }
+/**
+ * The getHookManager function returns a new hookManager object.
+ * @param path - The path to the directory where the hooks are stored.
+ * @returns A new instance of the hookManager class.
+ */
 export function getHookManager(path)
     {
      return new hookManager(path)   
     }
 export class hookManager 
 {
-    _hookCallbackClass:hookCallbacks 
+    callHook:IHookCallbacks 
 
     hasHook(property: string) {
-        if(this._hookCallbackClass !== undefined)
+        if(this.callHook !== undefined)
         
-        if (this._hookCallbackClass[property]!== undefined)
+        if (this.callHook[property]!== undefined)
            {return true}
         return false
         
     }
     call(property: string, ...args) {
-        if (this._hookCallbackClass !== undefined)
+        if (this.callHook !== undefined)
         {
-        if (typeof(this._hookCallbackClass[property])==="function")
+        if (typeof(this.callHook[property])==="function")
         {
-         const myFun = this._hookCallbackClass[property] 
+         const myFun = this.callHook[property] 
              
          
          if(myFun.length === args.length)
@@ -41,7 +49,7 @@ export class hookManager
     
     _templatePath;
     _templateHasHook = false;
-    _hooks:hookCallbacks;
+    _hooks:IHookCallbacks;
     _hookFullPath:string;
     constructor(templatePath:string) {
 
@@ -53,18 +61,7 @@ export class hookManager
         }
     
     }
-    getHookType(filepath)
-    {
-        if (fs.existsSync(filepath+".ts")){return  ".ts"}
-        if (fs.existsSync(filepath+".mts")){return ".mts"}
-        if (fs.existsSync(filepath+".cts")){return ".cts"}
-        if (fs.existsSync(filepath+".js")){return  ".js"}
-        if (fs.existsSync(filepath+".cjs")){return ".cjs"}
-        if (fs.existsSync(filepath+".mjs")){return ".mjs"}
-        return "None"
-           
-    }
-
+    
     async loadHooks()
     {   if(this._hookFullPath !=="None")
         {
@@ -73,7 +70,7 @@ export class hookManager
         this._hooks = await import(this._hookFullPath) 
         if (this._hooks["myHook"]!== undefined)
         {
-        this._hookCallbackClass = new this._hooks["myHook"]()
+        this.callHook = new this._hooks["myHook"]()
         }
         }
     }
@@ -84,7 +81,7 @@ export class hookManager
     {
         
         let check4hook = path.join(this._templatePath,"template",Config.templateHookName)
-        check4hook= path.join(check4hook+this.getHookType(check4hook))
+        check4hook= Utils.addExtensionType(check4hook,["ts","tsc","tsm","js","jsc","jsm"])
         this._hookFullPath =check4hook
         if (check4hook !== "none") {return true }
         return false

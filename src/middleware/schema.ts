@@ -1,111 +1,162 @@
 
-/* IMPORT */
-
+/* With the addition of the sdk in template 1.1.6 thing in the middleware are now
+drastically different.  It was a complete rewrite while trying to keep backwards compatibility  
+While doing the rewrite we add esm support and  a lot of thing had to change notably 
+import package.json (which is experimental as when this commit was written and there 
+are other ways to do it). The changes made to template 1.1.6 allow us to do that
+as a bonus it should allow us to support other package format as well tom,json5 etc. in the config. 
+*/ 
+ 
+import fs from 'fs';
+import isBinary from 'isbinaryfile';
+//import { autoLoadSync } from '@tib/configload';
+import {parse, load} from 'left-phalange-api'
 
 import _ from 'lodash';
-import isBinary from 'isbinaryfile';
 import path from 'path';
 import Config from '../config';
-import { autoLoadSync } from '@tib/configload';
-import * as JSOXpackage from 'jsox'
-const { JSOX } = JSOXpackage
 import Utils from '../utils';
-import fs from 'fs';
+
+import {filterData, schemaDate} from './types/schema';
+import { variableManager } from './variable';
+import { isArray} from '@i-doit/enten-types';
 
 
-//import * as json5 from "json5"
+export class SchemaData {
 
-export class basicFilter {
+  
+  private _filterData:filterData
+  private _Variables 
+  private _loadedJSON:schemaDate
 
-}
-/* BASIC SCHEMA */
-export class Schema {
-
-
-  filter: basicFilter
-  Variables = new Map<string, basicVariable>()
-  json: JSON;
-
-
-  static load(path: string, subJSON?: string) {
-
-    if (subJSON !== undefined) { return new Schema(path, subJSON) }
-    return new Schema(path)
-  }
-
-
-  constructor(path2conf: string, subConf?: string) {
-    path2conf = path.join(path2conf,Config.templateConfigName)
-    path2conf = path.join(this.FindExtension(path2conf))
-    if(fs.existsSync(path2conf)){
-    if (subConf === undefined) {
-      
-      autoLoadSync(path2conf).then((loadedJSON) => { this.json = loadedJSON })
-    }
-    else {
-      autoLoadSync(path2conf).then((loadedJSON) => {
-        let text = "{}"
-        if (loadedJSON.hasOwnProperty.call(subConf)) {
-          text = loadedJSON[subConf].stringify
-        }
-
-        this.json = JSOX.parse(text)
-      })
-    }
-  }
-  }
-  FindExtension(file:string):string
+  private parseData(loadedJSON)
   {
-  if (fs.existsSync(file+".json6")){return "json6"}
-  if (fs.existsSync(file+".json5")){return "json5"}
-  if (fs.existsSync(file+".yaml")){return "yaml"}
-  if (fs.existsSync(file+".toml")){return "toml"}
-  return "None"
+    this._loadedJSON = loadedJSON
+    if (isArray(loadedJSON.filter))
+    {
+      this._filterData.noParse=loadedJSON.filter 
+    }
+   
+    
+    this._Variables= new variableManager(this._loadedJSON?.variables,loadedJSON?.variablesOrder??[])
+    
+    
   }
+/**
+ * The SchemaData Class is a class that represent the data from one of the supported types
+ * 
+ * @param  path2ConfigOrString - This is the path to the configuration file or the
+ * String that need to be parse.
+ * @param  [subConf] - string - The name of the sub-configuration to load.
+ */
+  constructor(path2ConfigOrString: string, subConf?: string) {
+    
+    const fullPath = Utils.addExtensionType(path2ConfigOrString,Config.supportedConfigTypes)
+    //if find path Load it 
+    if (fullPath !=="None"){
+    path2ConfigOrString = fullPath
+    this.loadConf(path2ConfigOrString, subConf).then((loadedJSON:schemaDate)=>{this.parseData(loadedJSON)})
+    }
+    //if it not path assume that it a string that need prase 
+    else {
+      parse(path2ConfigOrString)
+    }
+    
+  }
+  getVariables():string[]
+  {
+  return this._Variables.getVariables();
+  }
+  getFilter():string[]
+  {
+  if(this._filterData.noParse !== undefined)  
+  {return this._filterData.noParse}
+  else
+  return []
+  }
+
+  
+  /**
+   * It loads a Config file and stores it as an schemaDate object
+   * @param {string} path2conf - the path to the configuration file
+   * @param {string} [subConf] - This is the name of the sub-configuration you want to load. If you
+   * don't need a sub-configuration, then you can leave this parameter blank.
+   */
+  
+  
+  async loadConf(path2conf: string, subConf?: string):Promise<schemaDate> {
+
+    if(!fs.existsSync(path2conf) || path2conf ==="None"){return {} }
+    
+    let configData:schemaDate = await load(path2conf)
+      
+    if (subConf === undefined){return configData}
+    
+    if (subConf in configData) {
+      configData = configData[subConf]
+    }
+    return configData    
+    
 
 }
+}
 
-export class basicVariable { }
+
+/* TEMPLATE SCHEMA */
+/* FILES SCHEMA */
+/* COMPUTER SCHEMA */
 
 
-export class schemaManager extends Schema {
+export function getSchemaManager(path2template): schemaManager {
+  return new schemaManager(path2template)
+}
 
-  _schema = new Map<string, Schema>()
+export class schemaManager  {
+  
 
-  /* VARIABLES */
-  static get(path2template): schemaManager {
-    return new schemaManager(path2template)
-  }
+  _schema = new Map<string, SchemaData>()
+
+
+    
 
   constructor(path2template: string) {
-    super(path2template)
+    
 
     const sPath =
     {
       "computer": path.join(Config.directory, Config.templateConfigName),
       "template": path.join(path2template, Config.templateConfigName)
     }
-
-
-    this._schema["computer"] = schemaManager.load(sPath.computer, "templates." + path.basename(path2template))
-    this._schema["template"] = schemaManager.load(sPath.template)
-    this._schema["merged"] = _.merge(this._schema["merged"], this._schema["template"], this._schema["computer"])
-    //this._schema["file"] = json5.parse()
+    
+    this._schema["computer"]= new SchemaData (sPath.computer,path.basename(path2template))
+    this._schema["template"]= new SchemaData (sPath.template)
+    this._schema["global"] = _.merge(this._schema["global"], this._schema["template"], this._schema["computer"])
+    
+  }
+  getFilter(type="global")
+  {
+  if (this._schema.has(type))
+  {
+  return this._schema[type]._filter
+  }
+  return undefined
   }
 
-
-  isFileValid(filepath, contents) {
-
-    if (Utils.template.isFileSkipped(filepath, this.filter)) return false
+  isValid(filepath, contents) {
+   //check global filter first 
+    if (Utils.template.isFileSkipped(filepath, this.getSchema()._filter)) return false
+    //check file filter second
+    if (Utils.template.isFileSkipped(filepath, this.getSchema(filepath)._filter)) return false
     if (isBinary.sync(contents, contents.length)) return false;
     return true
   }
 
-  getSchema(filepath, contents) {
+  getSchema(filepath="global") {
 
-    this._schema["file"] = Utils.handlebars.getSchema(contents.toString());
-    _.extend(this.Variables[filepath], this._schema["file"]);
-    return this._schema["file"]
+    
+    
+    return this._schema[filepath]
   }
 
 }
+export default schemaManager
