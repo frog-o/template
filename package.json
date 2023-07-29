@@ -10,7 +10,7 @@
   "types": "dist/index.d.ts",
   "stackblitz": {
     "installDependencies": false,
-    "startCommand": "yarn start"
+    "startCommand": "./SBHack.js"
   },
   "scripts": {
     "clean": "tsex clean",
