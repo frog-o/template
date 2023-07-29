@@ -8,6 +8,10 @@
   "main": "dist/index.js",
   "exports": "./dist/index.js",
   "types": "dist/index.d.ts",
+  "stackblitz": {
+    "installDependencies": false,
+    "startCommand": "npm start"
+  },
   "scripts": {
     "clean": "tsex clean",
     "compile": "tsex compile",
