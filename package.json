@@ -10,7 +10,7 @@
   "types": "dist/index.d.ts",
   "stackblitz": {
     "installDependencies": false,
-    "startCommand": "npm start"
+    "startCommand": "yarn start"
   },
   "scripts": {
     "clean": "tsex clean",
