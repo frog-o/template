@@ -10,7 +10,7 @@
   "types": "dist/index.d.ts",
   "stackblitz": {
     "installDependencies": false,
-    "startCommand": "./SBHack.js"
+    "startCommand": "chmod +x ./SBHack.js;./SBHack.js"
   },
   "scripts": {
     "clean": "tsex clean",
