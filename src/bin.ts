@@ -4,14 +4,20 @@
 
 import {bin} from 'specialist';
 import Template from '.';
+import { existsSync } from 'fs';
 
 /* MAIN */
 
 bin ( 'template', 'A super-simple way to create new projects based on templates' )
   /* DEFAULT */
-  .action ( () => { //TODO: Make this into a wizard instead, or show the help menu
-    console.log ( 'Execute "template --help" for help' );
-  })
+  .action ( () => { 
+    if (existsSync('/usr/bin/git')) {
+      // todo more of wizzard
+    }
+        console.log ( 'Execute "template --help" for help' );
+    
+
+     })
   /* CD */
   .command ( 'cd', 'CD into a local template' )
   .argument ( '<template>', 'The template to CD into' )

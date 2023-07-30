@@ -3,5 +3,6 @@
   "compilerOptions": {
     "noImplicitReturns": false,
     "noUnusedParameters": false
-  }
+ ,"ignoreDeprecations": "5.0"
+ }
 }

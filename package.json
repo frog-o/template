@@ -18,7 +18,8 @@
     "compile:watch": "tsex compile --watch",
     "test": "tsex test",
     "test:watch": "tsex test --watch",
-    "prepublishOnly": "tsex prepare"
+    "prepublishOnly": "tsex prepare",
+    "start": "node  --loader tsx --inspect ./src/bin.ts"
   },
   "keywords": [
     "template",
@@ -34,7 +35,8 @@
     "picolate": "^1.0.2",
     "prompts": "^2.4.2",
     "radix64-encoding": "^2.0.1",
-    "specialist": "^1.2.0"
+    "specialist": "^1.2.0",
+    "tsx": "^3.12.7"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.195",
