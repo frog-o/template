@@ -4,7 +4,7 @@
 
 import {bin} from 'specialist';
 import Template from '.';
-import { existsSync } from 'fs';
+import { existsSync } from 'node:fs';
 
 /* MAIN */
 

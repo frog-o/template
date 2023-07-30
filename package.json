@@ -12,8 +12,12 @@
     "installDependencies": false,
     "startCommand": "chmod +x ./SBHack.js;./SBHack.js"
   },
+  "note": {
+    "Compileing": "Tnt supports builing with ebuild \n > $ yarn run build and useing tsc  \n $ yarn run compile"
+  },
   "scripts": {
     "clean": "tsex clean",
+    "build": "tsup ./src/bin/bin.ts  --format esm --dts --sourcemap --clean  ",
     "compile": "tsex compile",
     "compile:watch": "tsex compile --watch",
     "test": "tsex test",
