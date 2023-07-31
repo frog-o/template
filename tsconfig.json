@@ -1,8 +1,10 @@
 {
   "extends": "tsex/tsconfig.json",
   "compilerOptions": {
+    "esModuleInterop":true,
     "noImplicitReturns": false,
-    "noUnusedParameters": false
- ,"ignoreDeprecations": "5.0"
- }
+    "noUnusedParameters": false,
+    "ignoreDeprecations": "5.0",
+    "resolveJsonModule": true
+  }
 }

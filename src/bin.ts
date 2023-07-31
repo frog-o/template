@@ -1,59 +1,63 @@
 #!/usr/bin/env node
 
-/* IMPORT */
+/** IMPORT */
 
-import {bin} from 'specialist';
-import Template from '.';
-import { existsSync } from 'node:fs';
+import { bin } from "specialist";
+import Template from ".";
+import { existsSync } from "node:fs";
+import Utils from "./utils.js";
 
-/* MAIN */
+/**  MAIN */
 
-bin ( 'template', 'A super-simple way to create new projects based on templates' )
+bin("template", "A super-simple way to create new projects based on templates")
   /* DEFAULT */
-  .action ( () => { 
-    if (existsSync('/usr/bin/git')) {
-      // todo more of wizzard
+  .action(async () => {
+    if (!existsSync("./conf/tnt")) {
+      let createConfig = await Utils.prompt.string(
+        `welcome to tnt ${Utils.getPackageConfig.version}`
+      );
+      if (createConfig) {
+        Utils.fs.mkdir('./conf/tnt')
+      }
     }
-        console.log ( 'Execute "template --help" for help' );
-    
-
-     })
+    console.log('Execute "template --help" for help');
+  })
   /* CD */
-  .command ( 'cd', 'CD into a local template' )
-  .argument ( '<template>', 'The template to CD into' )
-  .action ( ( options, args ) => {
-    return Template.cd ( args[0] );
+  .command("cd", "CD into a local template")
+  .argument("<template>", "The template to CD into")
+  .action((options, args) => {
+    return Template.cd(args[0]);
   })
   /* LS */
-  .command ( 'ls', 'List installed templates' )
-  .action ( () => {
-    return Template.ls ();
+  .command("ls", "List installed templates")
+  .action(() => {
+    return Template.ls();
   })
   /* NEW */
-  .command ( 'new', 'Create a p roject from a template' )
-  .argument ( '<template>', 'Template name' )
-  .argument ( '<project>', 'Project name' )
-  .action ( ( options, args ) => {
-    return Template.new ( args[0], args[1] );
+  .command("new", "Create a p roject from a template")
+  .argument("<template>", "Template name")
+  .argument("<project>", "Project name")
+  .action((options, args) => {
+    return Template.new(args[0], args[1]);
   })
   /* INSTALL */
-  .command ( 'install', 'Install a template from a repository' )
-  .argument ( '<repository>', 'Git endpoint url, GitHub shorthand, or local path' )
-  .argument ( '<template>', 'Template name' )
-  .action ( ( options, args ) => {
-    return Template.install ( args[0], args[1] );
+  .command("install", "Install a template from a repository")
+  .argument("<repository>", "Git endpoint url, GitHub shorthand, or local path")
+  .argument("<template>", "Template name")
+  .action((options, args) => {
+    return Template.install(args[0], args[1]);
   })
   /* UNINSTALL */
-  .command ( 'uninstall', 'Uninstall a template' )
-  .argument ( '<template>', 'Template name' )
-  .action ( ( options, args ) => {
-    return Template.uninstall ( args[0] );
+  .command("uninstall", "Uninstall a template")
+  .argument("<template>", "Template name")
+  .action((options, args) => {
+    return Template.uninstall(args[0]);
   })
   /* UPDATE */
-  .command ( 'update', 'Update one or all templates' )
-  .argument ( '[template]', 'Template name' )
-  .action ( ( options, args ) => {
-    return Template.update ( args[0] );
+  .command("update", "Update one or all templates")
+  .argument("[template]", "Template name")
+  .action((options, args) => {
+    return Template.update(args[0]);
   })
   /* RUN */
-  .run ();
+  .run();
