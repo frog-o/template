@@ -5,19 +5,24 @@
 import { bin } from "specialist";
 import Template from ".";
 import { existsSync } from "node:fs";
-import Utils from "./utils.js";
-
+import Utils from "./utils";
+import type { PackageJSON } from "./types";
+const myPackJSON: PackageJSON = (await Utils.fs.readJSON(
+  "package.json"
+)) as PackageJSON;
 /**  MAIN */
 
-bin("template", "A super-simple way to create new projects based on templates")
+bin("tnt", "A super-simple way to create new projects based on templates")
   /* DEFAULT */
   .action(async () => {
     if (!existsSync("./conf/tnt")) {
-      let createConfig = await Utils.prompt.string(
-        `welcome to tnt ${Utils.getPackageConfig.version}`
+      let createConfig = await Utils.prompt.boolean(
+        `Welcome to tnt ${myPackJSON?.version}\n 
+This appears to be your first run,  
+Can I create a Directory ./conf/tnt/ to store your config`
       );
       if (createConfig) {
-        Utils.fs.mkdir('./conf/tnt')
+        await Utils.fs.mkdir("./conf/tnt");
       }
     }
     console.log('Execute "template --help" for help');

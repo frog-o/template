@@ -23,6 +23,7 @@ type MetadataGlobal = {
 type MetadataLocal = {
   variables?: Record<string, Variable>
 };
+export type PackageJSON = {version:string}
 
 /* EXPORT */
 

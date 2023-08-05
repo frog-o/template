@@ -14,11 +14,10 @@ import {
   TEMPLATES_PATH,
 } from "./constants";
 import type { MetadataGlobal, MetadataLocal } from "./types";
-import packageConfig from "../package.json";
+//import packageConfig from "../package.json";
 /* MAIN */
 
 const Utils = {
-  getPackageConfig: packageConfig,
   /** API */
 
   fs: {
@@ -34,8 +33,6 @@ const Utils = {
     },
     mkdir: async (targetPath: string): Promise<void> => {
       console.log(`Trying to making dir ${targetPath}`);
-      targetPath = path.resolve(targetPath);
-
       await fs.mkdir(targetPath, { recursive: true });
     },
 
@@ -59,13 +56,15 @@ const Utils = {
 
     readJSON: async (filePath: string): Promise<{} | undefined> => {
       try {
+        console.log("trying to load " + filePath);
         const fileContent = await fs.readFile(filePath, "utf8");
         const fileValue = JSON.parse(fileContent);
 
         if (!_.isPlainObject(fileValue)) return;
 
         return fileValue;
-      } catch {
+      } catch (e) {
+        console.log(e);
         return;
       }
     },
@@ -78,7 +77,7 @@ const Utils = {
       }
     },
   },
-
+  //packageConf :  this.readJSON('../package.json'),
   metadata: {
     get: async (template: string): Promise<MetadataLocal | undefined> => {
       const metadataGlobal = await Utils.metadata.getGlobal();
